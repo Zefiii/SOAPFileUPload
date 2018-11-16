@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://imatge.me.org/" xmlns:tns="http://imatge.me.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="listImatges" type="tns:listImatges"/>
+
+  <xs:element name="listImatgesResponse" type="tns:listImatgesResponse"/>
+
+  <xs:element name="modifyImatge" type="tns:modifyImatge"/>
+
+  <xs:element name="modifyImatgeResponse" type="tns:modifyImatgeResponse"/>
+
+  <xs:element name="registreImatge" type="tns:registreImatge"/>
+
+  <xs:element name="registreImatgeResponse" type="tns:registreImatgeResponse"/>
+
+  <xs:element name="searchByAutor" type="tns:searchByAutor"/>
+
+  <xs:element name="searchByAutorResponse" type="tns:searchByAutorResponse"/>
+
+  <xs:element name="searchByDate" type="tns:searchByDate"/>
+
+  <xs:element name="searchByDateResponse" type="tns:searchByDateResponse"/>
+
+  <xs:element name="searchById" type="tns:searchById"/>
+
+  <xs:element name="searchByIdResponse" type="tns:searchByIdResponse"/>
+
+  <xs:element name="searchByKeywords" type="tns:searchByKeywords"/>
+
+  <xs:element name="searchByKeywordsResponse" type="tns:searchByKeywordsResponse"/>
+
+  <xs:element name="searchByTitle" type="tns:searchByTitle"/>
+
+  <xs:element name="searchByTitleResponse" type="tns:searchByTitleResponse"/>
+
+  <xs:complexType name="modifyImatge">
+    <xs:sequence>
+      <xs:element name="imatge" type="tns:imatge" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="imatge">
+    <xs:sequence>
+      <xs:element name="autor" type="xs:string" minOccurs="0"/>
+      <xs:element name="dataCreacio" type="xs:string" minOccurs="0"/>
+      <xs:element name="descripcio" type="xs:string" minOccurs="0"/>
+      <xs:element name="id" type="xs:int"/>
+      <xs:element name="keywords" type="xs:string" minOccurs="0"/>
+      <xs:element name="titol" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="modifyImatgeResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="searchByDate">
+    <xs:sequence>
+      <xs:element name="date" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="searchByDateResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:imatge" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="listImatges">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="listImatgesResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:imatge" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="searchById">
+    <xs:sequence>
+      <xs:element name="Id" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="searchByIdResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:imatge" minOccurs="0"/>
+      <xs:element name="return" type="xs:base64Binary"
+                  xmime:expectedContentTypes="image/jpeg" xmlns:xmime="http://www.w3.org/2005/05/xmlmime"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="searchByAutor">
+    <xs:sequence>
+      <xs:element name="autor" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="searchByAutorResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:imatge" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="registreImatge">
+    <xs:sequence>
+      <xs:element name="imatge" type="tns:imatge" minOccurs="0"/>
+      <xs:element name="foto" type="xs:base64Binary"
+                  xmime:expectedContentTypes="image/jpeg" xmlns:xmime="http://www.w3.org/2005/05/xmlmime"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="registreImatgeResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="searchByTitle">
+    <xs:sequence>
+      <xs:element name="title" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="searchByTitleResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:imatge" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="searchByKeywords">
+    <xs:sequence>
+      <xs:element name="keywords" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="searchByKeywordsResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:imatge" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

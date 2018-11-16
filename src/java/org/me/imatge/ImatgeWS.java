@@ -5,9 +5,7 @@
  */
 package org.me.imatge;
 
-import com.sun.xml.internal.ws.developer.StreamingAttachment;
-import com.sun.xml.internal.ws.developer.StreamingDataHandler;
-import java.io.File;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,29 +13,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.activation.DataHandler;
+
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
-import javax.xml.bind.annotation.XmlMimeType;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.soap.MTOM;
+
+
+
 
 /**
  *
  * @author annagarcia-nieto
  */
-@WebService(serviceName = "ImatgeWS")
+@WebService(serviceName = "ImatgeWS", wsdlLocation = "WEB-INF/wsdl/ImatgeWS.wsdl")
 public class ImatgeWS {
 
     /**
      * Web service operation
+     * @param imatge
+     * @return 
      */
-    @StreamingAttachment(parseEagerly=true, memoryThreshold=40000L)
     @WebMethod(operationName = "registreImatge")
-    @MTOM
-    public int registreImatge(@WebParam(name = "imatge") Imatge imatge, @XmlMimeType("application/octet-stream") 
-                          DataHandler dimage) {
+   
+    public int registreImatge(@WebParam(name = "imatge") Imatge imatge) {
         //TODO write your implementation code here:
         String titol = imatge.getTitol();
         String autor = imatge.getAutor();
@@ -49,14 +47,6 @@ public class ImatgeWS {
         } catch (ClassNotFoundException ex) {
             System.out.println("Error class.forname");
         }
-          try {
-            StreamingDataHandler dh = (StreamingDataHandler) dimage;
-            File file = new File(titol);
-            dh.moveTo(file);
-            dh.close();
-      } catch (Exception e) {
-            throw new WebServiceException(e);
-   }
         try{
             conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
            //conn = DriverManager.getConnection("jdbc:sqlite:/Usuaris/annagarcia-nieto/Escriptori/basedades.db");
@@ -78,8 +68,11 @@ public class ImatgeWS {
 
     /**
      * Web service operation
+     * @param image
+     * @return 
      */
     @WebMethod(operationName = "modifyImatge")
+
     public int modifyImatge(@WebParam(name = "imatge") Imatge image) {
         Connection conn = null;
         try {
@@ -109,6 +102,7 @@ public class ImatgeWS {
 
     /**
      * Web service operation
+     * @return 
      */
     @WebMethod(operationName = "listImatges")
     public List<Imatge> listImatges() {
@@ -151,6 +145,8 @@ public class ImatgeWS {
 
     /**
      * Web service operation
+     * @param Id
+     * @return 
      */
     @WebMethod(operationName = "searchById")
     public Imatge searchById(@WebParam(name = "Id") int Id) {
@@ -184,6 +180,8 @@ public class ImatgeWS {
 
     /**
      * Web service operation
+     * @param title
+     * @return 
      */
     @WebMethod(operationName = "searchByTitle")
     public List<Imatge> searchByTitle(@WebParam(name = "title") String title) {
@@ -225,6 +223,8 @@ public class ImatgeWS {
 
     /**
      * Web service operation
+     * @param date
+     * @return 
      */
     @WebMethod(operationName = "searchByDate")
     public List<Imatge> searchByDate(@WebParam(name = "date") String date) {
@@ -266,6 +266,8 @@ public class ImatgeWS {
 
     /**
      * Web service operation
+     * @param autor
+     * @return 
      */
     @WebMethod(operationName = "searchByAutor")
     public List<Imatge> searchByAutor(@WebParam(name = "autor") String autor) {
@@ -307,6 +309,8 @@ public class ImatgeWS {
 
     /**
      * Web service operation
+     * @param keywords
+     * @return 
      */
     @WebMethod(operationName = "searchByKeywords")
     public List<Imatge> searchByKeywords(@WebParam(name = "keywords") String keywords) {
