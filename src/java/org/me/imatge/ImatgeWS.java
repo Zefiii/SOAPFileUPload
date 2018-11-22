@@ -6,13 +6,24 @@
 package org.me.imatge;
 
 
+import java.awt.Image;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import javax.jws.WebService;
 import javax.jws.WebMethod;
@@ -31,11 +42,12 @@ public class ImatgeWS {
     /**
      * Web service operation
      * @param imatge
+     * @param foto
      * @return 
      */
     @WebMethod(operationName = "registreImatge")
    
-    public int registreImatge(@WebParam(name = "imatge") Imatge imatge) {
+    public int registreImatge(@WebParam(name = "imatge") Imatge imatge, Image foto) {
         //TODO write your implementation code here:
         String titol = imatge.getTitol();
         String autor = imatge.getAutor();
@@ -349,5 +361,42 @@ public class ImatgeWS {
             System.out.println(e);
             return null;
         }
+    }
+    
+    private byte[] getImageBytes(String name) throws IOException{
+        URL resource = this.getClass().getResource("/org/flower/resources/"+name+".");
+        return getBytes(resource);
+    }
+    
+    private byte[] getBytes(URL resource) throws IOException{
+        InputStream in = resource.openStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        for( int read; (read = in.read(buf)) != -1;){
+            bos.write(buf, 0 , read);
+        }
+        return bos.toByteArray();
+    }
+    private Image getImage(byte[] bytes, boolean isThumbnail) throws IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        Iterator readers = ImageIO.getImageReadersByFormatName("jpeg");
+        ImageReader reader = (ImageReader) readers.next();
+        Object source = bis;
+        ImageInputStream iis = ImageIO.createImageInputStream(source);
+        reader.setInput(iis, true);
+        ImageReadParam param = reader.getDefaultReadParam();
+        if (isThumbnail){
+            param.setSourceSubsampling(4,4,0,0);
+        }
+        return reader.read(0, param);
+    }
+    
+    private List allFlowers() throws IOException {
+        List flowers = new ArrayList();
+        for (String flower: FLOWERS){
+            URL resource = this.getClass().getResource("Path");
+            flowers.add(getBytes(resource));
+        }
+        return flowers;
     }
 }
