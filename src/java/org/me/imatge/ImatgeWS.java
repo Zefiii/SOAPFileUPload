@@ -7,8 +7,11 @@ package org.me.imatge;
 
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -20,6 +23,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.util.Pair;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
@@ -47,8 +53,12 @@ public class ImatgeWS {
      */
     @WebMethod(operationName = "registreImatge")
    
-    public int registreImatge(@WebParam(name = "imatge") Imatge imatge, Image foto) {
+    public int registreImatge(@WebParam(name = "imatge") Imatge imatge,@WebParam(name = "foto") Image foto) {
         //TODO write your implementation code here:
+        System.out.println("estic al servidor");
+        if(foto != null){
+            System.out.println("La foto ha arribat");
+        }
         String titol = imatge.getTitol();
         String autor = imatge.getAutor();
         String data = imatge.getDataCreacio();
@@ -60,8 +70,10 @@ public class ImatgeWS {
             System.out.println("Error class.forname");
         }
         try{
-            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
+            //conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
            //conn = DriverManager.getConnection("jdbc:sqlite:/Usuaris/annagarcia-nieto/Escriptori/basedades.db");
+           conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
+           
            PreparedStatement statement = conn.prepareStatement("insert into imagenes values (?, ?, ?, ?, ?, ? , ?)");
            statement.setInt(1, imatge.getId());
            statement.setString(2, "Jordi");
@@ -71,11 +83,25 @@ public class ImatgeWS {
            statement.setString(6, imatge.getAutor());
            statement.setString(7, imatge.getDataCreacio());
            statement.executeUpdate();
+           System.out.println("Estic a punt d'entrar a save");
+           saveImage(foto, imatge.getTitol());
             return 1;
         }
         catch(SQLException ex){
             return 0;
+        } catch (IOException ex) {
+            Logger.getLogger(ImatgeWS.class.getName()).log(Level.SEVERE, null, ex);
         }
+        finally{
+            if(conn != null){
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ImatgeWS.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return 0;
     }
 
     /**
@@ -93,11 +119,13 @@ public class ImatgeWS {
             System.out.println("Error class.forname");
         }
         try{
-            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
+            //conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
            //conn = DriverManager.getConnection("jdbc:sqlite:/Users/Jordi/Desktop/loquesea.db");
+           conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
+           
            
            PreparedStatement statement = conn.prepareStatement("update imagenes set titulo = ?, descripcion = ?, palabras_clave = ?, autor = ? where id_imagen = ?;");
-           statement.setString(1, image.getTitol());
+           statement.setString(1, image.getTitol()); //Si es modifica el titol ja no trobem la foto
            statement.setString(2, image.getDescripcio());
            statement.setString(3, image.getKeywords());
            statement.setString(4, image.getAutor());
@@ -126,8 +154,8 @@ public class ImatgeWS {
             System.out.println("Error class.forname");
         }
         try{
-            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
-            //conn = DriverManager.getConnection("jdbc:sqlite:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
+            //conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
             //conn = DriverManager.getConnection("jdbc:sqlite:/Usuaris/annagarcia-nieto/Escriptori/basedades.db");
             PreparedStatement statement =  conn.prepareStatement("select * from imagenes"); 
 
@@ -144,7 +172,7 @@ public class ImatgeWS {
                 imatge.setKeywords(rs.getString("palabras_clave"));
                 imatge.setDataCreacio(rs.getString("creacion"));
                 imatge.setAutor(rs.getString("autor"));
-                            
+                
                 list.add(imatge);
 
             }
@@ -169,8 +197,8 @@ public class ImatgeWS {
             System.out.println("Error class.forname");
         }
         try{
-            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
-            //conn = DriverManager.getConnection("jdbc:sqlite:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
+            //conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
             //conn = DriverManager.getConnection("jdbc:sqlite:/Usuaris/annagarcia-nieto/Escriptori/basedades.db");
             PreparedStatement statement =  conn.prepareStatement("select * from imagenes where id_imagen = ?");
             statement.setString(1, String.valueOf(Id));
@@ -182,6 +210,7 @@ public class ImatgeWS {
             im.setKeywords(rs.getString("palabras_clave"));
             im.setDataCreacio(rs.getString("creacion"));
             im.setAutor(rs.getString("autor"));
+            
             return im;
         }
         catch(SQLException e){
@@ -204,8 +233,8 @@ public class ImatgeWS {
             System.out.println("Error class.forname");
         }
         try{
-            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
-            //conn = DriverManager.getConnection("jdbc:sqlite:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
+            //conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
             //conn = DriverManager.getConnection("jdbc:sqlite:/Usuaris/annagarcia-nieto/Escriptori/basedades.db");
             PreparedStatement statement =  conn.prepareStatement("select * from imagenes where titulo = ?"); 
             statement.setString(1, title);
@@ -222,9 +251,9 @@ public class ImatgeWS {
                 imatge.setKeywords(rs.getString("palabras_clave"));
                 imatge.setDataCreacio(rs.getString("creacion"));
                 imatge.setAutor(rs.getString("autor"));
-                            
+                
+                
                 list.add(imatge);
-
             }
             return list;
         } catch(SQLException e) {
@@ -247,8 +276,8 @@ public class ImatgeWS {
             System.out.println("Error class.forname");
         }
         try{
-            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
-            //conn = DriverManager.getConnection("jdbc:sqlite:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
+            //conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
             //conn = DriverManager.getConnection("jdbc:sqlite:/Usuaris/annagarcia-nieto/Escriptori/basedades.db");
             PreparedStatement statement =  conn.prepareStatement("select * from imagenes where creacion = ?"); 
             statement.setString(1, date);
@@ -265,7 +294,8 @@ public class ImatgeWS {
                 imatge.setKeywords(rs.getString("palabras_clave"));
                 imatge.setDataCreacio(rs.getString("creacion"));
                 imatge.setAutor(rs.getString("autor"));
-                            
+                
+                
                 list.add(imatge);
 
             }
@@ -290,8 +320,8 @@ public class ImatgeWS {
             System.out.println("Error class.forname");
         }
         try{
-            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
-            //conn = DriverManager.getConnection("jdbc:sqlite:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
+            //conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Oriol\\Desktop\\basedades.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
             //conn = DriverManager.getConnection("jdbc:sqlite:/Usuaris/annagarcia-nieto/Escriptori/basedades.db");
             PreparedStatement statement =  conn.prepareStatement("select * from imagenes where autor = ?"); 
             statement.setString(1, autor);
@@ -308,7 +338,7 @@ public class ImatgeWS {
                 imatge.setKeywords(rs.getString("palabras_clave"));
                 imatge.setDataCreacio(rs.getString("creacion"));
                 imatge.setAutor(rs.getString("autor"));
-                            
+                        
                 list.add(imatge);
 
             }
@@ -318,7 +348,18 @@ public class ImatgeWS {
             return null;
         }
     }
-
+    public Image getFoto(String title){
+        Image image = null;
+        byte[] bytes =  null;
+        try {
+            bytes = getImageBytes(title);
+            image = getImage(bytes);
+        } catch (IOException ex) {
+            Logger.getLogger(ImatgeWS.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return image;
+    }
     /**
      * Web service operation
      * @param keywords
@@ -351,7 +392,7 @@ public class ImatgeWS {
                     imatge.setKeywords(rs.getString("palabras_clave"));
                     imatge.setDataCreacio(rs.getString("creacion"));
                     imatge.setAutor(rs.getString("autor"));
-
+                    
                     list.add(imatge);
                 }
 
@@ -364,7 +405,7 @@ public class ImatgeWS {
     }
     
     private byte[] getImageBytes(String name) throws IOException{
-        URL resource = this.getClass().getResource("/org/flower/resources/"+name+".");
+        URL resource = this.getClass().getResource("fotos/jaiosuf.jpeg");
         return getBytes(resource);
     }
     
@@ -377,26 +418,34 @@ public class ImatgeWS {
         }
         return bos.toByteArray();
     }
-    private Image getImage(byte[] bytes, boolean isThumbnail) throws IOException {
+    private Image getImage(byte[] bytes) throws IOException {
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-        Iterator readers = ImageIO.getImageReadersByFormatName("jpeg");
+        Iterator readers = ImageIO.getImageReadersByFormatName("jpg");
         ImageReader reader = (ImageReader) readers.next();
         Object source = bis;
         ImageInputStream iis = ImageIO.createImageInputStream(source);
         reader.setInput(iis, true);
         ImageReadParam param = reader.getDefaultReadParam();
-        if (isThumbnail){
-            param.setSourceSubsampling(4,4,0,0);
-        }
         return reader.read(0, param);
     }
     
-    private List allFlowers() throws IOException {
+    private void saveImage(Image foto, String titol) throws IOException{
+        System.out.println("Estic a guardar foto");
+        BufferedImage bi = null;
+        if(foto instanceof BufferedImage){
+            bi = (BufferedImage) foto;
+        }
+        else bi = new BufferedImage(foto.getHeight(null), foto.getWidth(null), BufferedImage.TYPE_INT_RGB);
+        File f = new File("C:\\Users\\oriol\\OneDrive\\Documentos\\Uni\\AD\\SOAPFileUPload\\src\\java\\org\\me\\imatge\\fotos\\"+titol+".jpeg");
+        f.createNewFile();
+        ImageIO.write(bi, "JPEG", f.getAbsoluteFile());
+    }
+    /*private List allFlowers() throws IOException {
         List flowers = new ArrayList();
         for (String flower: FLOWERS){
             URL resource = this.getClass().getResource("Path");
             flowers.add(getBytes(resource));
         }
         return flowers;
-    }
+    }*/
 }
