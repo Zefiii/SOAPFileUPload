@@ -348,9 +348,10 @@ public class ImatgeWS {
             return null;
         }
     }
-    public Image getFoto(String title){
+    public Image getFoto(@WebParam(name = "title") String title){
         Image image = null;
         byte[] bytes =  null;
+        System.out.println("El titol que arriba" + title);
         try {
             bytes = getImageBytes(title);
             image = getImage(bytes);
@@ -404,8 +405,9 @@ public class ImatgeWS {
         }
     }
     
-    private byte[] getImageBytes(String name) throws IOException{
-        URL resource = this.getClass().getResource("fotos/jaiosuf.jpeg");
+    private byte[] getImageBytes( String title) throws IOException{
+        System.out.println(title);
+        URL resource = this.getClass().getResource("fotos/"+title+".jpeg");
         return getBytes(resource);
     }
     
